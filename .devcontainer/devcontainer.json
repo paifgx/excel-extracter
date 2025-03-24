@@ -1,0 +1,17 @@
+{
+    "name": "Python Development Container",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter"
+            ]
+        }
+    },
+    "forwardPorts": [],
+    "postCreateCommand": "uv venv && . .venv/bin/activate"
+} 
