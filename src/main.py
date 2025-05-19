@@ -75,10 +75,10 @@ def combine_headers(
 ) -> List[str]:
     """Combine header rows into final column names and handle duplicates."""
     n_cols = df_raw.shape[1]
-    final_header = []
+    final_header: List[Optional[str]] = []
     
     for col in range(n_cols):
-        header_parts = []
+        header_parts: List[str] = []
         for idx in header_indices:
             cell = df_raw.iloc[idx, col]
             if pd.isna(cell):
@@ -91,18 +91,22 @@ def combine_headers(
         final_header.append(combined if combined else None)
     
     # Keep only columns with content
-    final_header = [final_header[i] for i in valid_cols]
+    filtered_header: List[str] = []
+    for i in valid_cols:
+        header_value = final_header[i]
+        if header_value is not None:
+            filtered_header.append(header_value)
     
     # Handle duplicates
-    seen = {}
-    for i, name in enumerate(final_header):
+    seen: Dict[str, int] = {}
+    for i, name in enumerate(filtered_header):
         if name in seen:
             seen[name] += 1
-            final_header[i] = f"{name}_{seen[name]}"
+            filtered_header[i] = f"{name}_{seen[name]}"
         else:
             seen[name] = 1
-    
-    return final_header
+
+    return filtered_header
 
 
 def extract_data_rows(
@@ -172,7 +176,9 @@ def extract_table_from_sheet(
 
     # Extend multiline header detection
     if auto_detect_multiline:
-        for j in range(header_indices[-1] + 1, header_indices[-1] + max_header_rows):
+        for j in range(
+            header_indices[-1] + 1, header_indices[-1] + max_header_rows + 1
+        ):
             if j >= len(df_raw):
                 break
             row = df_raw.iloc[j]
